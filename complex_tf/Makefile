@@ -9,4 +9,6 @@ all_libs:
 
 clean:
 	-$(RM) *~
+	-$(RM) *.pyc
 	$(MAKE) -C core clean
+	$(MAKE) -C python clean
