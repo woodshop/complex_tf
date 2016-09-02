@@ -1,8 +1,10 @@
-import zero_out as zo
+import zero_out as _zero_out
 import zero_out_grad
-
-zero_out = zo.zero_out
+import cplx_tanh as _cplx_tanh
+zero_out = _zero_out.zero_out
+cplx_tanh = _cplx_tanh.cplx_tanh
 
 __all__ = [
-    'zero_out'
+    'zero_out',
+    'cplx_tanh'
 ]
