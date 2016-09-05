@@ -10,6 +10,19 @@ def cplx_tanh(x, name="CplxTanh"):
     with ops.name_scope(name) as name:
         return _complex_tf_lib.cplx_tanh(x, name=name)
 
+@ops.RegisterGradient("CplxTanh")
+def _cplx_tanh_grad(op, grad):
+    """The gradients for `cplx_tanh`.
+
+  Args:
+    op: The `cplx_tanh` `Operation` that we are differentiating.
+    grad: Gradient with respect to the output of the `cplx_tanh` op.
+
+  Returns:
+    Gradients with respect to the input of `cplx_tanh`.
+  """
+    return 1. - ctf.cplx_square(tf.conj(op.outputs[0]))
+    
 @tf.RegisterShape("CplxTanh")
 def _zero_out_shape(op):
     """
