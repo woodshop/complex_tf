@@ -5,8 +5,8 @@
 #include "tensorflow/core/util/cuda_kernel_helper.h"
 #include <pycuda-complex.hpp>
 
- namespace pycuda {
-
+namespace pycuda {
+  
   __global__ void CplxTanhKernel(const complex<float> *in,
 				 complex<float> *out,
 				 unsigned long n) {
@@ -18,7 +18,7 @@
       out[i] = tanh(in[i]);
     }
   }
- } // namespace pycuda
+} // namespace pycuda
 
 
  namespace tensorflow {
