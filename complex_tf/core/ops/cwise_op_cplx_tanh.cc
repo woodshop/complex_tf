@@ -5,21 +5,8 @@
 #include "tensorflow/core/framework/shape_inference.h"
 
 namespace tensorflow {
-  typedef Eigen::ThreadPoolDevice CPUDevice;
   typedef Eigen::GpuDevice GPUDevice;
-  
-  // exact copy of the TF Tanh function, restricted to complex64
-  REGISTER_OP("CplxTanh")
-  .Input("x: T")
-  .Output("y: T")
-  .Attr("T: {complex64}")
-  .SetShapeFn(shape_inference::UnchangedShape)
-  .Doc(R"doc(
-Computes hyperbolic tangent of `x` element-wise.
-)doc");
-  
-  REGISTER(UnaryOp, CPU, "CplxTanh", functor::tanh, complex64);
-  
+    
   #if GOOGLE_CUDA  
   class CplxTanhOp : public OpKernel {
   public:
@@ -39,9 +26,8 @@ Computes hyperbolic tangent of `x` element-wise.
     }
   };
 
-  REGISTER_KERNEL_BUILDER(Name("CplxTanh").Device(DEVICE_GPU),
+  REGISTER_KERNEL_BUILDER(Name("Tanh").Device(DEVICE_GPU),
 			  CplxTanhOp);
   #endif // GOOGLE_CUDA
 
-  
 } // namespace tensorflow 
