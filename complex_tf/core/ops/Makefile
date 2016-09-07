@@ -15,12 +15,17 @@ NVCCFLAGS = -DGOOGLE_CUDA=1         \
 	-D_FORCE_INLINES            \
 	$(INCLUDE) -c -x cu -Xcompiler -fPIC --expt-relaxed-constexpr
 
-# muldefs fixes issue with including pycuda multiple times 
+# muldefs fixes issue with including pycuda in each object
 LDFLAGS = -shared -z muldefs
 
-SRCS = zero_out.cc  cwise_op_cplx_tanh.cc cwise_op_cplx_square.cc
-CUDA_SRCS = zero_out_gpu.cu.cc cwise_op_gpu_cplx_tanh.cu.cc \
-	cwise_op_gpu_cplx_square.cu.cc
+SRCS = zero_out.cc              \
+	cwise_op_cplx_tanh.cc   \
+	cwise_op_cplx_square.cc \
+# 	cwise_op_cplx_sub.cc
+CUDA_SRCS = zero_out_gpu.cu.cc         \
+	cwise_op_gpu_cplx_tanh.cu.cc   \
+	cwise_op_gpu_cplx_square.cu.cc \
+# 	cwise_op_gpu_cplx_sub.cu.cc
 
 RM = rm -f
 TARGET_LIB = complextf.so

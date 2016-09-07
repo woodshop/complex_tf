@@ -21,7 +21,7 @@ def _cplx_tanh_grad(op, grad):
   Returns:
     Gradients with respect to the input of `cplx_tanh`.
   """
-    return 1. - ctf.cplx_square(tf.conj(op.outputs[0]))
+    return grad * (1 - ctf.cplx_square(tf.conj(op.outputs[0])))
     
 @tf.RegisterShape("CplxTanh")
 def _zero_out_shape(op):

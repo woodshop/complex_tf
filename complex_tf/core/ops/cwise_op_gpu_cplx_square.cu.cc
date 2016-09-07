@@ -1,12 +1,11 @@
 #if GOOGLE_CUDA
-#define EIGEN_USE_GPU
-#include "cwise_op_cplx_square.h"
-#include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
+#include "cwise_cplx_ops.h"
+#include "cwise_cplx_ops_gpu_common.cu.h"
 #include "tensorflow/core/util/cuda_kernel_helper.h"
 #include <pycuda-complex.hpp>
 
- namespace pycuda {
-
+namespace pycuda {
+  
   __global__ void CplxSquareKernel(const complex<float> *in,
 				 complex<float> *out,
 				 unsigned long n) {
@@ -18,27 +17,30 @@
       out[i] = pow(in[i], 2);
     }
   }
- } // namespace pycuda
+} // namespace pycuda
 
 
- namespace tensorflow {
+namespace tensorflow {
 
-  typedef Eigen::GpuDevice GPUDevice;
-
-   namespace functor {
-
-    void CplxSquareFunctor::operator()(const GPUDevice& d,
-    		      typename TTypes<complex64>::ConstFlat input,
-    		      typename TTypes<complex64>::Flat output,
-    		      const int N) {
-      printf("\t\tCalling GPU kernel for CplxSquare.\n");
-      CudaLaunchConfig config = GetCudaLaunchConfig(N, d);
-      pycuda::CplxSquareKernel<<<config.block_count, config.thread_per_block, 0,
-	d.stream()>>>((pycuda::complex<float> *)input.data(),
-		      (pycuda::complex<float> *)output.data(),
-		      N);
-    }
+  namespace functor {
+    
+    struct CplxSquareKernelLauncher {
+      void operator()(const GPUDevice& d,
+		      typename TTypes<complex64>::Flat output,
+		      typename TTypes<complex64>::ConstFlat input) {
+	printf("\t\tCalling GPU kernel for CplxSquare.\n");
+	const int N =input.size();
+	CudaLaunchConfig config = GetCudaLaunchConfig(N, d);
+	pycuda::CplxSquareKernel<<<config.block_count, config.thread_per_block, 0,
+	  d.stream()>>>((pycuda::complex<float> *)input.data(),
+			(pycuda::complex<float> *)output.data(),
+			N);
+      }
+    };
+    
+    DEFINE_UNARY1(cplx_square, complex64);
     
   } // namespace functor
+  
 } // namespace tensorflow
 #endif  // GOOGLE_CUDA
