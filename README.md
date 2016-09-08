@@ -16,4 +16,4 @@ Since this project is currently private, I'll keep notes here related to buildin
 ### ZerosLike
 The bleeding-edge Tensorflow distrobution appears to support, but not register 
 a "ZerosLike" op for `complex64`. I've registered the op in my TF branch. I haven't written any
-unit tests for this dtype. "ZerosLike" is necessary for computimh the gradient of "Div".
+unit tests for this dtype. "ZerosLike" is necessary for computing the gradient of "Pow".
