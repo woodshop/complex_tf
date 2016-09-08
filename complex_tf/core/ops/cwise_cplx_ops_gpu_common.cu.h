@@ -36,6 +36,12 @@ typedef Eigen::GpuDevice GPUDevice;
 typedef std::complex<float> complex64;
 typedef std::complex<double> complex128;
 
+ enum scalar_side {
+   left,
+   right,
+   none
+ };
+ 
 // Partial specialization of UnaryFunctor<Device=GPUDevice, Functor>.
 template <typename Functor>
 struct UnaryFunctor<GPUDevice, Functor> {
@@ -44,63 +50,40 @@ struct UnaryFunctor<GPUDevice, Functor> {
     typename Functor::func()(d, out, in);
   }
 };
-
+ 
 // Partial specialization of BinaryFunctor<Device=GPUDevice, Functor>.
 template <typename Functor, int NDIMS, bool has_errors>
 struct BinaryFunctor<GPUDevice, Functor, NDIMS, has_errors> {
   void operator()(const GPUDevice& d, typename Functor::tout_type out,
                   typename Functor::tin_type in0,
                   typename Functor::tin_type in1, bool* error) {
-    To32Bit(out).device(d) =
-        To32Bit(in0).binaryExpr(in1, typename Functor::func());
+    typename Functor::func()(d, out, in0, in1);
   }
 
   void Left(const GPUDevice& d, typename Functor::tout_type out,
             typename Functor::tscalar_type scalar,
             typename Functor::tin_type in, bool* error) {
-    typedef typename Functor::out_type Tout;
-    typedef typename Functor::in_type Tin;
-    typedef typename Functor::func Binary;
-    typedef typename Eigen::internal::scalar_left<Tout, Tin, Binary> Unary;
-    To32Bit(out).device(d) = To32Bit(in).unaryExpr(Unary(scalar.data()));
+    typename Functor::func()(d, out, in, scalar, left);
   }
 
   void Right(const GPUDevice& d, typename Functor::tout_type out,
              typename Functor::tin_type in,
              typename Functor::tscalar_type scalar, bool* error) {
-    typedef typename Functor::out_type Tout;
-    typedef typename Functor::in_type Tin;
-    typedef typename Functor::func Binary;
-    typedef typename Eigen::internal::scalar_right<Tout, Tin, Binary> Unary;
-    To32Bit(out).device(d) = To32Bit(in).unaryExpr(Unary(scalar.data()));
+    typename Functor::func()(d, out, in, scalar, right);
   }
 
+  // Changed Eigen::array to std::array to avoid linking errors. No idea
+  // what I'm forgetting to include that's causing this linking problem.
   void BCast(const GPUDevice& d,
              typename TTypes<typename Functor::out_type, NDIMS>::Tensor out,
              typename TTypes<typename Functor::in_type, NDIMS>::ConstTensor in0,
-             typename Eigen::array<Eigen::DenseIndex, NDIMS> bcast0,
+             typename std::array<Eigen::DenseIndex, NDIMS> bcast0,
              typename TTypes<typename Functor::in_type, NDIMS>::ConstTensor in1,
-             typename Eigen::array<Eigen::DenseIndex, NDIMS> bcast1,
+             typename std::array<Eigen::DenseIndex, NDIMS> bcast1,
              bool* error) {
-    typedef typename Functor::in_type T;
-    typename Functor::func func;
-    if ((NDIMS == 2) && Functor::use_bcast_optimization &&
-        use_bcast_optimization<T>::value) {
-      const bool bcast0_all_one = AllOne<NDIMS>(bcast0);
-      const bool bcast1_all_one = AllOne<NDIMS>(bcast1);
-      if (bcast0_all_one && !bcast1_all_one) {
-        To32Bit(out).device(d) =
-            To32Bit(in0).binaryExpr(To32Bit(in1).broadcast(bcast1), func);
-        return;
-      }
-      if (!bcast0_all_one && bcast1_all_one) {
-        To32Bit(out).device(d) =
-            To32Bit(in0).broadcast(bcast0).binaryExpr(To32Bit(in1), func);
-        return;
-      }
-    }
-    To32Bit(out).device(d) = To32Bit(in0).broadcast(bcast0).binaryExpr(
-        To32Bit(in1).broadcast(bcast1), func);
+    // How to handle broadcasting?
+    LOG(ERROR) << "Broadcasting for binary functor not implemented on GPU.";
+    *error = true;
   }
 };
 
