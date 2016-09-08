@@ -47,6 +47,20 @@ class UnaryOpTest(tf.test.TestCase):
                   1j*np.random.randn(*sh)).astype(np.complex64))
             self._compareGpuGrad(x, np.negative, tf.neg)
                       
+    def testCplxSquareGPU(self):
+        shapes = [(5,4,3), (5,4), (5,), (1,)]
+        for sh in shapes:
+            x = ((np.random.randn(*sh) +
+                  1j*np.random.randn(*sh)).astype(np.complex64))
+            self._compareGpu(x, np.square, tf.square)
+                  
+    def testCplxSquareGradGPU(self):
+        shapes = [(5,4,3), (5,4), (5,), (1,)]
+        for sh in shapes:
+            x = ((np.random.randn(*sh) +
+                  1j*np.random.randn(*sh)).astype(np.complex64))
+            self._compareGpuGrad(x, np.square, tf.square)
+                      
     def testCplxTanhGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
         for sh in shapes:
@@ -160,15 +174,15 @@ class BinaryOpTest(tf.test.TestCase):
             self._compareGpu(x, y, np.divide, tf.div)
                   
     #### Depends on Square
-    # def testCplxDivGradGPU(self):
-    #     shapes1 = [(5,4,3), (5,4), (1,), (5,)]
-    #     shapes2 = [(5,4,3), (1,), (5,4), (5,)]
-    #     for [sh0, sh1] in zip(shapes1, shapes2):
-    #         x = ((np.random.randn(*sh0) +
-    #               1j*np.random.randn(*sh0)).astype(np.complex64))
-    #         y = ((np.random.randn(*sh1) +
-    #               1j*np.random.randn(*sh1)).astype(np.complex64))
-    #         self._compareGpuGrad(x, y, np.divide, tf.div)
+    def testCplxDivGradGPU(self):
+        shapes1 = [(5,4,3), (5,4), (1,), (5,)]
+        shapes2 = [(5,4,3), (1,), (5,4), (5,)]
+        for [sh0, sh1] in zip(shapes1, shapes2):
+            x = ((np.random.randn(*sh0) +
+                  1j*np.random.randn(*sh0)).astype(np.complex64))
+            y = ((np.random.randn(*sh1) +
+                  1j*np.random.randn(*sh1)).astype(np.complex64))
+            self._compareGpuGrad(x, y, np.divide, tf.div)
                       
     def testCplxPowGPU(self):
         shapes1 = [(5,4,3), (5,4), (1,), (5,)]

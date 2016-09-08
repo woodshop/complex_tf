@@ -5,7 +5,7 @@
 namespace tensorflow {
   
 #if GOOGLE_CUDA
-  REGISTER(UnaryOp, GPU, "Square", functor::cplx_square, complex64);
+  REGISTER(UnaryOp, GPU, "Neg", functor::cplx_neg, complex64);
 #endif // GOOGLE_CUDA
 
 } // namespace tensorflow 
