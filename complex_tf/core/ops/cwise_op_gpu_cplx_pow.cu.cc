@@ -40,7 +40,6 @@ namespace tensorflow {
 		      typename TTypes<complex64>::Flat output,
 		      typename TTypes<complex64>::ConstFlat input1,
 		      typename TTypes<complex64>::ConstFlat input2) {
-	printf("\t\tCalling GPU kernel for CplxPow.\n");
 	const int N = input1.size();
 	CudaLaunchConfig config = GetCudaLaunchConfig(N, d);
 	pycuda::CplxPowKernel<<<config.block_count, config.thread_per_block, 0,

@@ -18,9 +18,9 @@ NVCCFLAGS = -DGOOGLE_CUDA=1         \
 # muldefs fixes linking problem created by including pycuda in each object
 LDFLAGS = -shared -z muldefs
 
-SRCS = zero_out.cc              \
+SRCS =                         \
 	cwise_op_cplx_neg.cc   \
-	cwise_op_cplx_tanh.cc   \
+	cwise_op_cplx_tanh.cc  \
 	cwise_op_cplx_add.cc   \
 	cwise_op_cplx_sub.cc   \
 	cwise_op_cplx_mul.cc   \
@@ -28,9 +28,9 @@ SRCS = zero_out.cc              \
 	cwise_op_cplx_pow.cc   \
 #	cwise_op_cplx_square.cc \
 
-CUDA_SRCS = zero_out_gpu.cu.cc         \
+CUDA_SRCS =                           \
 	cwise_op_gpu_cplx_neg.cu.cc   \
-	cwise_op_gpu_cplx_tanh.cu.cc   \
+	cwise_op_gpu_cplx_tanh.cu.cc  \
 	cwise_op_gpu_cplx_add.cu.cc   \
 	cwise_op_gpu_cplx_sub.cu.cc   \
 	cwise_op_gpu_cplx_mul.cu.cc   \

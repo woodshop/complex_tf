@@ -28,7 +28,6 @@ namespace tensorflow {
       void operator()(const GPUDevice& d,
 		      typename TTypes<complex64>::Flat output,
 		      typename TTypes<complex64>::ConstFlat input) {
-	printf("\t\tCalling GPU kernel for CplxSquare.\n");
 	const int N =input.size();
 	CudaLaunchConfig config = GetCudaLaunchConfig(N, d);
 	pycuda::CplxSquareKernel<<<config.block_count, config.thread_per_block, 0,

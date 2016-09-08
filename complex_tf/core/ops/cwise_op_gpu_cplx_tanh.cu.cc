@@ -41,7 +41,6 @@ namespace tensorflow {
       void operator()(const GPUDevice& d,
 		      typename TTypes<complex64>::Flat output,
 		      typename TTypes<complex64>::ConstFlat input) {
-	printf("\t\tCalling GPU kernel for CplxTanh.\n");
 	const int N =input.size();
 	CudaLaunchConfig config = GetCudaLaunchConfig(N, d);
 	pycuda::CplxTanhKernel<<<config.block_count, config.thread_per_block, 0,
@@ -56,7 +55,6 @@ namespace tensorflow {
 		      typename TTypes<complex64>::Flat output,
 		      typename TTypes<complex64>::ConstFlat input1,
 		      typename TTypes<complex64>::ConstFlat input2) {
-	printf("\t\tCalling GPU kernel for CplxTanhGrad.\n");
 	const int N =input1.size();
 	CudaLaunchConfig config = GetCudaLaunchConfig(N, d);
 	pycuda::CplxTanhGradKernel<<<config.block_count,
