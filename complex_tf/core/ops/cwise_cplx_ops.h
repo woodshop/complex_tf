@@ -13,13 +13,21 @@ namespace tensorflow {
     template <typename T>
       struct cplx_neg : base<T, CplxNegKernelLauncher> { };    
 
+    struct CplxSquareKernelLauncher;
+    template <typename T>
+      struct cplx_square : base<T, CplxSquareKernelLauncher> { };    
+
+    struct CplxLogKernelLauncher;
+    template <typename T>
+      struct cplx_log : base<T, CplxLogKernelLauncher> { };    
+
     struct CplxTanhKernelLauncher;
     template <typename T>
       struct cplx_tanh : base<T, CplxTanhKernelLauncher> { };    
 
-    struct CplxSquareKernelLauncher;
+    struct CplxInvKernelLauncher;
     template <typename T>
-      struct cplx_square : base<T, CplxSquareKernelLauncher> { };    
+      struct cplx_inv : base<T, CplxInvKernelLauncher> { };    
 
     ////////////////////////////////////////////////////////////////////////////
     // Binary functors
@@ -44,6 +52,10 @@ namespace tensorflow {
     struct CplxPowKernelLauncher;
     template <typename T>
       struct cplx_pow : base<T, CplxPowKernelLauncher> { };    
+
+    struct CplxNotEqualKernelLauncher;
+    template <typename T>
+      struct cplx_not_equal : base<T, CplxNotEqualKernelLauncher, bool> { };    
 
   }  // namespace functor
   

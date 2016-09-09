@@ -10,6 +10,10 @@ namespace tensorflow {
     template <typename T>
       struct cplx_tanh_grad : base<T, CplxTanhGradKernelLauncher> { };    
 
+    struct CplxInvGradKernelLauncher;
+    template <typename T>
+      struct cplx_inv_grad : base<T, CplxInvGradKernelLauncher> { };    
+
   }  // namespace functor
   
 }  // namespace tensorflow
