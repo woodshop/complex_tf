@@ -33,6 +33,13 @@ class UnaryOpTest(tf.test.TestCase):
                                                         x_init_value=x)
             self.assertAllClose(jacob_t, jacob_n, rtol=1e-3, atol=1e-3)
                 
+    def testCplxAbsGPU(self):
+        shapes = [(5,4,3), (5,4), (5,), (1,)]
+        for sh in shapes:
+            x = ((np.random.randn(*sh) +
+                  1j*np.random.randn(*sh)).astype(np.complex64))
+            self._compareGpu(x, np.abs, tf.abs)
+                  
     def testCplxNegGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
         for sh in shapes:
@@ -40,12 +47,40 @@ class UnaryOpTest(tf.test.TestCase):
                   1j*np.random.randn(*sh)).astype(np.complex64))
             self._compareGpu(x, np.negative, tf.neg)
                   
-    def testCplxNegGradGPU(self):
+    # def testCplxNegGradGPU(self):
+    #     shapes = [(5,4,3), (5,4), (5,), (1,)]
+    #     for sh in shapes:
+    #         x = ((np.random.randn(*sh) +
+    #               1j*np.random.randn(*sh)).astype(np.complex64))
+    #         self._compareGpuGrad(x, np.negative, tf.neg)
+                      
+    def testCplxInvGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
         for sh in shapes:
             x = ((np.random.randn(*sh) +
                   1j*np.random.randn(*sh)).astype(np.complex64))
-            self._compareGpuGrad(x, np.negative, tf.neg)
+            self._compareGpu(x, np.reciprocal, tf.inv)
+                  
+    def testCplxInvGradGPU(self):
+        shapes = [(5,4,3), (5,4), (5,), (1,)]
+        for sh in shapes:
+            x = ((np.random.randn(*sh) +
+                  1j*np.random.randn(*sh)).astype(np.complex64))
+            self._compareGpuGrad(x, np.reciprocal, tf.inv)
+
+    def testCplxSquareGPU(self):
+        shapes = [(5,4,3), (5,4), (5,), (1,)]
+        for sh in shapes:
+            x = ((np.random.randn(*sh) +
+                  1j*np.random.randn(*sh)).astype(np.complex64))
+            self._compareGpu(x, np.square, tf.square)
+                  
+    # def testCplxSquareGradGPU(self):
+    #     shapes = [(5,4,3), (5,4), (5,), (1,)]
+    #     for sh in shapes:
+    #         x = ((np.random.randn(*sh) +
+    #               1j*np.random.randn(*sh)).astype(np.complex64))
+    #         self._compareGpuGrad(x, np.square, tf.square)
                       
     def testCplxLogGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
@@ -61,48 +96,20 @@ class UnaryOpTest(tf.test.TestCase):
     #               1j*np.random.randn(*sh)).astype(np.complex64))
     #         self._compareGpuGrad(x, np.log, tf.log)
                       
-    # def testCplxSquareGPU(self):
-    #     shapes = [(5,4,3), (5,4), (5,), (1,)]
-    #     for sh in shapes:
-    #         x = ((np.random.randn(*sh) +
-    #               1j*np.random.randn(*sh)).astype(np.complex64))
-    #         self._compareGpu(x, np.square, tf.square)
+    def testCplxTanhGPU(self):
+        shapes = [(5,4,3), (5,4), (5,), (1,)]
+        for sh in shapes:
+            x = ((np.random.randn(*sh) +
+                  1j*np.random.randn(*sh)).astype(np.complex64))
+            self._compareGpu(x, np.tanh, tf.tanh)
                   
-    # def testCplxSquareGradGPU(self):
-    #     shapes = [(5,4,3), (5,4), (5,), (1,)]
-    #     for sh in shapes:
-    #         x = ((np.random.randn(*sh) +
-    #               1j*np.random.randn(*sh)).astype(np.complex64))
-    #         self._compareGpuGrad(x, np.square, tf.square)
-                      
-    # def testCplxTanhGPU(self):
-    #     shapes = [(5,4,3), (5,4), (5,), (1,)]
-    #     for sh in shapes:
-    #         x = ((np.random.randn(*sh) +
-    #               1j*np.random.randn(*sh)).astype(np.complex64))
-    #         self._compareGpu(x, np.tanh, tf.tanh)
-                  
-    # def testCplxTanhGradGPU(self):
-    #     shapes = [(5,4,3), (5,4), (5,), (1,)]
-    #     for sh in shapes:
-    #         x = ((np.random.randn(*sh) +
-    #               1j*np.random.randn(*sh)).astype(np.complex64))
-    #         self._compareGpuGrad(x, np.tanh, tf.tanh)
-                      
-    # def testCplxInvGPU(self):
-    #     shapes = [(5,4,3), (5,4), (5,), (1,)]
-    #     for sh in shapes:
-    #         x = ((np.random.randn(*sh) +
-    #               1j*np.random.randn(*sh)).astype(np.complex64))
-    #         self._compareGpu(x, np.reciprocal, tf.inv)
-                  
-    # def testCplxInvGradGPU(self):
-    #     shapes = [(5,4,3), (5,4), (5,), (1,)]
-    #     for sh in shapes:
-    #         x = ((np.random.randn(*sh) +
-    #               1j*np.random.randn(*sh)).astype(np.complex64))
-    #         self._compareGpuGrad(x, np.reciprocal, tf.inv)
-                      
+    def testCplxTanhGradGPU(self):
+        shapes = [(5,4,3), (5,4), (5,), (1,)]
+        for sh in shapes:
+            x = ((np.random.randn(*sh) +
+                  1j*np.random.randn(*sh)).astype(np.complex64))
+            self._compareGpuGrad(x, np.tanh, tf.tanh)
+                                            
 class BinaryOpTest(tf.test.TestCase):
 
     def _compareGpu(self, x, y, np_func, tf_func):
