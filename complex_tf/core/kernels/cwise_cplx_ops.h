@@ -1,7 +1,9 @@
 /*
-Functors fro complex functions. Many of these were adapted from
+Functors for complex functions. Many of these were adapted from
 Pycuda header files.
  */
+
+#include "tensorflow/core/kernels/cwise_ops_common.h"
 
 #ifndef CTF_CWISE_CPLX_OPS_H_
 #define CTF_CWISE_CPLX_OPS_H_
@@ -94,6 +96,54 @@ namespace tensorflow {
     	}
       };
 
+    template <typename T>
+      struct cplx_mul {
+    	typedef std::complex<T> result_type;
+    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
+	result_type operator()(std::complex<T> a, std::complex<T> b) const {
+    	  return std::complex<T>(a.real() * b.real() - a.imag() * b.imag(),
+				 a.real() * b.imag() + a.imag() * b.real());
+    	}
+      };
+
+    template <typename T>
+      struct cplx_div {
+    	typedef std::complex<T> result_type;
+    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
+	result_type operator()(std::complex<T> a, std::complex<T> b) const {
+	  std::complex<T> res;
+	  T ar = b.real() >= 0 ? b.real() : -b.real();
+	  T ai = b.imag() >= 0 ? b.imag() : -b.imag();
+
+	  if (ar <= ai) {
+	    T ratio = b.real() / b.imag();
+	    T denom = b.imag() * (1 + ratio * ratio);
+	    res.real((a.real() * ratio + a.imag()) / denom);
+	    res.imag((a.imag() * ratio - a.real()) / denom);
+	  } else {
+	    T ratio = b.imag() / b.real();
+	    T denom = b.real() * (1 + ratio * ratio);
+	    res.real((a.real() + a.imag() * ratio) / denom);
+	    res.imag((a.imag() - a.real() * ratio) / denom);
+	  }
+	  return res;
+    	}
+      };
+
+    template <typename T>
+      struct cplx_pow {
+    	typedef std::complex<T> result_type;
+    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
+	result_type operator()(std::complex<T> a, std::complex<T> b) const {
+	  T logr = ::log(::hypot(a.real(), a.imag()));
+	  T logi = ::atan2(a.imag(), a.real());
+	  T x = ::exp(logr * b.real() - logi * b.imag());
+	  T y = logr * b.imag() + logi * b.real();
+
+	  return std::complex<T>(x * ::cos(y), x * ::sin(y));
+    	}
+      };
+
 
     ////////////////////////////////////////////////////////////////////////////
     // Unary functors
@@ -123,29 +173,17 @@ namespace tensorflow {
     // Binary functors
     ////////////////////////////////////////////////////////////////////////////
 
-    struct CplxAddKernelLauncher;
-    template <typename T>
-      struct cplx_add : base<T, CplxAddKernelLauncher> { };    
+    template <>
+      struct mul<std::complex<float> > : base<std::complex<float>,
+      cplx_mul<float> > {};
 
-    struct CplxSubKernelLauncher;
-    template <typename T>
-      struct cplx_sub : base<T, CplxSubKernelLauncher> { };    
-    
-    struct CplxMulKernelLauncher;
-    template <typename T>
-      struct cplx_mul : base<T, CplxMulKernelLauncher> { };    
+    template <>
+      struct div<std::complex<float> > : base<std::complex<float>,
+      cplx_div<float> > {};
 
-    struct CplxDivKernelLauncher;
-    template <typename T>
-      struct cplx_div : base<T, CplxDivKernelLauncher> { };    
-
-    struct CplxPowKernelLauncher;
-    template <typename T>
-      struct cplx_pow : base<T, CplxPowKernelLauncher> { };    
-
-    struct CplxNotEqualKernelLauncher;
-    template <typename T>
-      struct cplx_not_equal : base<T, CplxNotEqualKernelLauncher, bool> { };    
+    template <>
+      struct pow<std::complex<float> > : base<std::complex<float>,
+      cplx_pow<float> > {};
 
   }  // namespace functor
   
