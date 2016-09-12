@@ -5,8 +5,8 @@ RM = rm -f
 .PHONY: clean
 
 all_libs:
-	$(MAKE) -C ops
+	$(MAKE) -C kernels
 
 clean:
 	-$(RM) *~
-	$(MAKE) -C ops clean
+	$(MAKE) -C kernels clean

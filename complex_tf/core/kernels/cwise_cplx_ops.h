@@ -1,25 +1,34 @@
 #ifndef CTF_CWISE_CPLX_OPS_H_
 #define CTF_CWISE_CPLX_OPS_H_
-#include "tensorflow/core/kernels/cwise_ops_common.h"
 
 namespace tensorflow {
   
   namespace functor {
     
+    template <typename T>
+      struct cplx_log {
+    	typedef std::complex<T> result_type;
+    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE result_type operator()(std::complex<T> a) const {
+    	  std::complex<T> r;
+
+    	  r.imag(::atan2(a.imag(), a.real()));
+    	  r.real(::log(::hypot(a.real(), a.imag())));
+    	  return r;
+    	}
+      };
+
+
     ////////////////////////////////////////////////////////////////////////////
     // Unary functors
     ////////////////////////////////////////////////////////////////////////////
-    struct CplxNegKernelLauncher;
-    template <typename T>
-      struct cplx_neg : base<T, CplxNegKernelLauncher> { };    
 
     struct CplxSquareKernelLauncher;
     template <typename T>
       struct cplx_square : base<T, CplxSquareKernelLauncher> { };    
 
-    struct CplxLogKernelLauncher;
-    template <typename T>
-      struct cplx_log : base<T, CplxLogKernelLauncher> { };    
+    template <>
+      struct log<std::complex<float> > : base<std::complex<float>,
+      cplx_log<float> > {};
 
     struct CplxTanhKernelLauncher;
     template <typename T>
