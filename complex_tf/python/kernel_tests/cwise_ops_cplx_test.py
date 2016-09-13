@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import numpy as np
 import tensorflow as tf
-import complex_tf as ctf
+import complex_tf
 
 class UnaryOpTest(tf.test.TestCase):
 

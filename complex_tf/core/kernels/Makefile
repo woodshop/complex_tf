@@ -1,4 +1,5 @@
-INCLUDE += -I /home/sarroff/repo/tensorflow
+
+INCLUDE += -I $(TF_SRC)
 INCLUDE += -I $(shell python -c \
 	'import tensorflow as tf; print(tf.sysconfig.get_include())')
 CXX = gcc -std=c++11
@@ -47,7 +48,12 @@ CUDA_SRCS =                             \
 RM = rm -f
 TARGET_LIB = complextf.so
 
-all: $(TARGET_LIB)
+all: check-env $(TARGET_LIB)
+
+check-env:
+ifndef TF_SRC
+    $(error TF_SRC is undefined)
+endif
 
 $(TARGET_LIB): $(CUDA_SRCS:.cc=.o) $(SRCS)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(CXXFLAGS)
