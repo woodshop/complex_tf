@@ -19,31 +19,38 @@ NVCCFLAGS = -DGOOGLE_CUDA=1         \
 
 LDFLAGS = -shared
 
-SRCS =                           \
-	cwise_op_neg.cc          \
-	cwise_op_abs.cc          \
-	cwise_op_inverse.cc      \
-	cwise_op_square.cc       \
-	cwise_op_log.cc          \
-	cwise_op_tanh.cc         \
-	cwise_op_sub.cc          \
-	cwise_op_mul.cc          \
-	cwise_op_div.cc          \
-	cwise_op_pow.cc          \
-	cwise_op_not_equal_to.cc \
+SRCS =                           	\
+	cwise_op_abs.cc          	\
+	cwise_op_neg.cc          	\
+	cwise_op_inverse.cc      	\
+	cwise_op_square.cc       	\
+	cwise_op_log.cc          	\
+	cwise_op_sign.cc	 	\
+	cwise_op_tanh.cc         	\
+	cwise_op_add.cc          	\
+	cwise_op_sub.cc          	\
+	cwise_op_mul.cc          	\
+	cwise_op_div.cc          	\
+	cwise_op_pow.cc          	\
+	cwise_op_not_equal_to.cc 	\
+	cwise_op_not_equal_to.cc 	\
+	constant_op.cc			\
 
 CUDA_SRCS =                             \
-	cwise_op_gpu_neg.cu.cc          \
 	cwise_op_gpu_abs.cu.cc          \
+	cwise_op_gpu_neg.cu.cc          \
 	cwise_op_gpu_inverse.cu.cc      \
 	cwise_op_gpu_square.cu.cc       \
 	cwise_op_gpu_log.cu.cc          \
+	cwise_op_gpu_sign.cu.cc		\
 	cwise_op_gpu_tanh.cu.cc         \
+	cwise_op_gpu_add.cu.cc          \
 	cwise_op_gpu_sub.cu.cc          \
 	cwise_op_gpu_mul.cu.cc          \
 	cwise_op_gpu_div.cu.cc          \
 	cwise_op_gpu_pow.cu.cc          \
 	cwise_op_gpu_not_equal_to.cu.cc \
+	constant_op_gpu.cu.cc		\
 
 RM = rm -f
 TARGET_LIB = complextf.so
