@@ -6,5 +6,4 @@ RM = rm -f
 clean:
 	-$(RM) *~
 	-$(RM) *.pyc
-	$(MAKE) -C ops clean
 	$(MAKE) -C kernel_tests clean
