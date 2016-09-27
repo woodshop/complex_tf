@@ -79,17 +79,6 @@ struct FillFunctor<GPUDevice, T> {
 DEFINE_FILL_GPU(complex64);
 #undef DEFINE_FILL_GPU
 
-// Partial specialization of FillFunctor<Device=GPUDevice, T>.
-template <typename T>
-struct SetZeroFunctor<GPUDevice, T> {
-  void operator()(const GPUDevice& d, typename TTypes<T>::Flat out) {
-    To32Bit(out).device(d) = To32Bit(out).constant(T(0));
-  }
-};
-
-#define DEFINE_SETZERO_GPU(T) template struct SetZeroFunctor<GPUDevice, T>
-DEFINE_SETZERO_GPU(complex64);
-#undef DEFINE_SETZERO_GPU
 
 }  // end namespace functor
 }  // end namespace tensorflow

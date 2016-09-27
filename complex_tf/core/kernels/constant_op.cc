@@ -75,29 +75,4 @@ REGISTER_KERNEL(GPU, complex64);
 
 #undef REGISTER_KERNEL
 
-template <typename Device, typename T>
-class ZerosLikeOp : public OpKernel {
- public:
-  explicit ZerosLikeOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
-
-  void Compute(OpKernelContext* ctx) override {
-    const Tensor& input = ctx->input(0);
-    Tensor* out = nullptr;
-    OP_REQUIRES_OK(ctx, ctx->allocate_output(0, input.shape(), &out));
-    functor::SetZeroFunctor<Device, T> f;
-    f(ctx->eigen_device<Device>(), out->flat<T>());
-  }
-};
-
-#define REGISTER_KERNEL(type, dev)                                      \
-  REGISTER_KERNEL_BUILDER(                                              \
-      Name("ZerosLike").Device(DEVICE_##dev).TypeConstraint<type>("T"), \
-      ZerosLikeOp<dev##Device, type>)
-
-#if GOOGLE_CUDA
-REGISTER_KERNEL(complex64, GPU);
-#endif  // GOOGLE_CUDA
-
-#undef REGISTER_KERNEL
-
 }  // namespace tensorflow

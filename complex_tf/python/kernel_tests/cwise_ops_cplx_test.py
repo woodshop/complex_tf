@@ -33,20 +33,6 @@ class UnaryOpTest(tf.test.TestCase):
                                                         x_init_value=x)
             self.assertAllClose(jacob_t, jacob_n, rtol=1e-3, atol=1e-3)
                 
-    def testCplxAbsGPU(self):
-        shapes = [(5,4,3), (5,4), (5,), (1,)]
-        for sh in shapes:
-            x = ((np.random.randn(*sh) +
-                  1j*np.random.randn(*sh)).astype(np.complex64))
-            self._compareGpu(x, np.abs, tf.abs)
-
-    def testCplxAbsGradGPU(self):
-        shapes = [(5,4,3), (5,4), (5,), (1,)]
-        for sh in shapes:
-            x = ((np.random.randn(*sh) +
-                  1j*np.random.randn(*sh)).astype(np.complex64))
-            self._compareGpuGrad(x, np.abs, tf.abs)
-                  
     def testCplxNegGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
         for sh in shapes:
@@ -102,25 +88,6 @@ class UnaryOpTest(tf.test.TestCase):
             x = ((np.random.randn(*sh) +
                   1j*np.random.randn(*sh)).astype(np.complex64))
             self._compareGpuGrad(x, np.log, tf.log)
-                      
-    def testCplxSignGPU(self):
-        shapes = [(5,4,3), (5,4), (5,), (1,)]
-        for sh in shapes:
-            x = ((np.random.randn(*sh) +
-                  1j*np.random.randn(*sh)).astype(np.complex64))
-            f = lambda a: np.piecewise(a, [np.abs(a) == 0, np.abs(a) != 0],
-                                       [lambda a: 0, lambda a: a / np.abs(a)])
-            self._compareGpu(x, f, tf.sign)
-
-    ### TODO: Why is CPU grad != GPU Grad?
-    def testCplxSignGradGPU(self):
-        shapes = [(5,4,3), (5,4), (5,), (1,)]
-        for sh in shapes:
-            x = ((np.random.randn(*sh) +
-                  1j*np.random.randn(*sh)).astype(np.complex64))
-            f = lambda a: np.piecewise(a, [np.abs(a) == 0, np.abs(a) != 0],
-                                       [lambda a: 0, lambda a: a / np.abs(a)])
-            self._compareGpuGrad(x, f, tf.sign)
                       
     def testCplxTanhGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]

@@ -22,46 +22,6 @@ import numpy as np
 import tensorflow as tf
 import complex_tf
 
-class ZerosLikeTest(tf.test.TestCase):
-
-  def _compareZeros(self, dtype, force_gpu):
-    with self.test_session(force_gpu=force_gpu):
-      # Creates a tensor of non-zero values with shape 2 x 3.
-      numpy_dtype = dtype.as_numpy_dtype
-      d = tf.constant(np.ones((2, 3), dtype=numpy_dtype), dtype=dtype)
-      # Constructs a tensor of zeros of the same dimensions and type as "d".
-      z_var = tf.zeros_like(d)
-      # Test that the type is correct
-      self.assertEqual(z_var.dtype, dtype)
-      z_value = z_var.eval()
-
-      # Test that the value is correct
-      self.assertTrue(np.array_equal(z_value, np.array([[0] * 3] * 2)))
-      self.assertEqual([2, 3], z_var.get_shape())
-
-  def testZerosLikeGPU(self):
-    for dtype in [tf.complex64]:
-      self._compareZeros(dtype, True)
-
-  def testZerosLikePartialShape(self):
-    d = tf.placeholder(tf.complex64, shape=[None, 4, None])
-    z = tf.zeros_like(d)
-    self.assertEqual(d.get_shape().as_list(), z.get_shape().as_list())
-
-  def testZerosLikeDtype(self):
-    # Make sure zeros_like works even for dtypes that cannot be cast between
-    with self.test_session():
-      shape = (3, 5)
-      dtypes = np.float32, np.complex64
-      for in_type in dtypes:
-        x = np.arange(15).astype(in_type).reshape(*shape)
-        for out_type in dtypes:
-          y = tf.zeros_like(x, dtype=out_type).eval()
-          self.assertEqual(y.dtype, out_type)
-          self.assertEqual(y.shape, shape)
-          self.assertAllEqual(y, np.zeros(shape, dtype=out_type))
-
-
 class FillTest(tf.test.TestCase):
 
   def _compare(self, dims, val, np_ans, force_gpu):

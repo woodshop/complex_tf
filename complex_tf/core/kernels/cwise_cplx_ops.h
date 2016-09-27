@@ -24,15 +24,6 @@ namespace tensorflow {
   namespace functor {
     
     template <typename T>
-      struct cplx_abs {
-    	typedef T result_type;
-    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
-	result_type operator()(std::complex<T> a) const {
-	  return ::hypot(a.real(), a.imag());
-    	}
-      };
-
-    template <typename T>
       struct cplx_inverse {
     	typedef std::complex<T> result_type;
     	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
@@ -148,10 +139,6 @@ namespace tensorflow {
     ////////////////////////////////////////////////////////////////////////////
     // Unary functors
     ////////////////////////////////////////////////////////////////////////////
-
-    template <>
-      struct abs<std::complex<float> > : base<std::complex<float>,
-      cplx_abs<float>, float> {};
 
     template <>
       struct inverse<std::complex<float> > : base<std::complex<float>,

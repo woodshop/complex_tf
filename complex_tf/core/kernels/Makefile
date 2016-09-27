@@ -17,15 +17,12 @@ NVCCFLAGS = -DGOOGLE_CUDA=1         \
 	-DEIGEN_AVOID_STL_ARRAY     \
 	$(INCLUDE) -c -x cu -Xcompiler -fPIC --expt-relaxed-constexpr
 
-LDFLAGS = -shared
-
+LDFLAGS = -shared  -lprotobuf
 SRCS =                           	\
-	cwise_op_abs.cc          	\
 	cwise_op_neg.cc          	\
 	cwise_op_inverse.cc      	\
 	cwise_op_square.cc       	\
 	cwise_op_log.cc          	\
-	cwise_op_sign.cc	 	\
 	cwise_op_tanh.cc         	\
 	cwise_op_add.cc          	\
 	cwise_op_sub.cc          	\
@@ -35,14 +32,13 @@ SRCS =                           	\
 	cwise_op_not_equal_to.cc 	\
 	cwise_op_not_equal_to.cc 	\
 	constant_op.cc			\
+	training_ops.cc			\
 
 CUDA_SRCS =                             \
-	cwise_op_gpu_abs.cu.cc          \
 	cwise_op_gpu_neg.cu.cc          \
 	cwise_op_gpu_inverse.cu.cc      \
 	cwise_op_gpu_square.cu.cc       \
 	cwise_op_gpu_log.cu.cc          \
-	cwise_op_gpu_sign.cu.cc		\
 	cwise_op_gpu_tanh.cu.cc         \
 	cwise_op_gpu_add.cu.cc          \
 	cwise_op_gpu_sub.cu.cc          \
@@ -51,6 +47,13 @@ CUDA_SRCS =                             \
 	cwise_op_gpu_pow.cu.cc          \
 	cwise_op_gpu_not_equal_to.cu.cc \
 	constant_op_gpu.cu.cc		\
+	training_ops_gpu.cu.cc		\
+
+# SRCS =                           	\
+# 	training_ops.cc			\
+
+# CUDA_SRCS =                             \
+# 	training_ops_gpu.cu.cc		\
 
 RM = rm -f
 TARGET_LIB = complextf.so
@@ -63,7 +66,7 @@ ifndef TF_SRC
 endif
 
 $(TARGET_LIB): $(CUDA_SRCS:.cc=.o) $(SRCS)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(CXXFLAGS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 $(CUDA_SRCS:.cc=.o): $(CUDA_SRCS) 
 	$(NVCC) $^ $(NVCCFLAGS)
