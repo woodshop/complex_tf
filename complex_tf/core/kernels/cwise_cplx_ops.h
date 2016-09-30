@@ -88,40 +88,6 @@ namespace tensorflow {
       };
 
     template <typename T>
-      struct cplx_mul {
-    	typedef std::complex<T> result_type;
-    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
-	result_type operator()(std::complex<T> a, std::complex<T> b) const {
-    	  return std::complex<T>(a.real() * b.real() - a.imag() * b.imag(),
-				 a.real() * b.imag() + a.imag() * b.real());
-    	}
-      };
-
-    template <typename T>
-      struct cplx_div {
-    	typedef std::complex<T> result_type;
-    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
-	result_type operator()(std::complex<T> a, std::complex<T> b) const {
-	  std::complex<T> res;
-	  T ar = b.real() >= 0 ? b.real() : -b.real();
-	  T ai = b.imag() >= 0 ? b.imag() : -b.imag();
-
-	  if (ar <= ai) {
-	    T ratio = b.real() / b.imag();
-	    T denom = b.imag() * (1 + ratio * ratio);
-	    res.real((a.real() * ratio + a.imag()) / denom);
-	    res.imag((a.imag() * ratio - a.real()) / denom);
-	  } else {
-	    T ratio = b.imag() / b.real();
-	    T denom = b.real() * (1 + ratio * ratio);
-	    res.real((a.real() + a.imag() * ratio) / denom);
-	    res.imag((a.imag() - a.real() * ratio) / denom);
-	  }
-	  return res;
-    	}
-      };
-
-    template <typename T>
       struct cplx_pow {
     	typedef std::complex<T> result_type;
     	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
@@ -159,14 +125,6 @@ namespace tensorflow {
     ////////////////////////////////////////////////////////////////////////////
     // Binary functors
     ////////////////////////////////////////////////////////////////////////////
-
-    template <>
-      struct mul<std::complex<float> > : base<std::complex<float>,
-      cplx_mul<float> > {};
-
-    template <>
-      struct div<std::complex<float> > : base<std::complex<float>,
-      cplx_div<float> > {};
 
     template <>
       struct pow<std::complex<float> > : base<std::complex<float>,
