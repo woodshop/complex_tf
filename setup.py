@@ -10,7 +10,9 @@ setup(
     license ="LGPLv3+",
     keywords = "complex neural network",
     url = "",
-    packages=['complex_tf'],
+    packages=['complex_tf', 'complex_tf.python', 'complex_tf.python.training'],
+    data_files=[('complex_tf/core/kernels',
+                 ['complex_tf/core/kernels/complextf.so'])],
     long_description='',
     classifiers=[
         "Development Status :: 1 - Planning",
