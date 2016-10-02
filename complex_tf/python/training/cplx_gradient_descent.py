@@ -21,9 +21,16 @@ from __future__ import print_function
 from tensorflow.python.training.gradient_descent import GradientDescentOptimizer
 from tensorflow.python.framework import dtypes
 
+
 class CplxGradientDescentOptimizer(GradientDescentOptimizer):
   """Overrides tf.train.GradientDescentOptimizer to support complex values.
   """
+  
+  def __init__(self, learning_rate, use_locking=False,
+               name="CplxGradientDescent"):
+    super(CplxGradientDescentOptimizer, self).__init__(learning_rate,
+                                                       use_locking, name)
+
 
   def _apply_sparse(self, grad, var):
     raise NotImplementedError

@@ -88,6 +88,43 @@ namespace tensorflow {
       };
 
     template <typename T>
+      struct cplx_tan {
+    	typedef std::complex<T> result_type;
+    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
+	result_type operator()(std::complex<T> a) const {
+	  T re2 = 2.f * a.real();
+	  T im2 = 2.f * a.imag();
+
+	  if (::abs(im2) > float_limit) {
+	    return std::complex<T>(0.f, (im2 > 0 ? 1.f : -1.f));
+	  } else {
+	    T den = ::cos(re2) + ::cosh(im2);
+	    return std::complex<T>(::sin(re2) / den, ::sinh(im2) / den);
+	  }
+	}
+      };
+
+    template <typename T>
+      struct cplx_cos {
+    	typedef std::complex<T> result_type;
+    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
+	result_type operator()(std::complex<T> a) const {
+	  return std::complex<T>(::cos(a.real()) * ::cosh(a.imag()),
+				 -::sin(a.real()) * ::sinh(a.imag()));
+	}
+      };
+
+    template <typename T>
+      struct cplx_sin {
+    	typedef std::complex<T> result_type;
+    	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
+	result_type operator()(std::complex<T> a) const {
+	  return std::complex<T>(::sin(a.real()) * ::cosh(a.imag()),
+				 ::cos(a.real()) * ::sinh(a.imag()));
+	}
+      };
+    
+    template <typename T>
       struct cplx_pow {
     	typedef std::complex<T> result_type;
     	EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
@@ -121,6 +158,18 @@ namespace tensorflow {
     template <>
       struct tanh<std::complex<float> > : base<std::complex<float>,
       cplx_tanh<float> > {};
+
+    template <>
+      struct tan<std::complex<float> > : base<std::complex<float>,
+      cplx_tan<float> > {};
+
+    template <>
+      struct cos<std::complex<float> > : base<std::complex<float>,
+      cplx_cos<float> > {};
+
+    template <>
+      struct sin<std::complex<float> > : base<std::complex<float>,
+      cplx_sin<float> > {};
 
     ////////////////////////////////////////////////////////////////////////////
     // Binary functors

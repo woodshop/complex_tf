@@ -25,32 +25,8 @@ NVCCFLAGS = -DGOOGLE_CUDA=1         \
 
 LDFLAGS = -shared -lprotobuf -lcudart
 
-SRCS =                           	\
-	cwise_op_neg.cc          	\
-	cwise_op_inverse.cc      	\
-	cwise_op_square.cc       	\
-	cwise_op_log.cc          	\
-	cwise_op_tanh.cc         	\
-	cwise_op_pow.cc          	\
-	cwise_op_not_equal_to.cc 	\
-	constant_op.cc			\
-	training_ops.cc			\
-	variable_ops.cc			\
-	dense_update_ops.cc		\
-	training_ops.cc			\
-	$(PROTOBUF_LIB)
-
-CUDA_SRCS =                             \
-	cwise_op_gpu_neg.cu.cc          \
-	cwise_op_gpu_inverse.cu.cc      \
-	cwise_op_gpu_square.cu.cc       \
-	cwise_op_gpu_log.cu.cc          \
-	cwise_op_gpu_tanh.cu.cc         \
-	cwise_op_gpu_pow.cu.cc          \
-	cwise_op_gpu_not_equal_to.cu.cc \
-	constant_op_gpu.cu.cc		\
-	dense_update_ops_gpu.cu.cc	\
-	training_ops_gpu.cu.cc		\
+CUDA_SRCS = $(wildcard *.cu.cc)
+SRCS = $(filter-out $(CUDA_SRCS),$(wildcard *.cc)) $(PROTOBUF_LIB)
 
 RM = rm -f
 TARGET_LIB = complextf.so
@@ -65,7 +41,7 @@ endif
 $(TARGET_LIB): $(CUDA_SRCS:.cc=.o) $(SRCS)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-$(CUDA_SRCS:.cc=.o): $(CUDA_SRCS) 
+$(CUDA_SRCS:.cc=.o): $(CUDA_SRCS)
 	$(NVCC) $^ $(NVCCFLAGS)
 
 .PHONY: clean
