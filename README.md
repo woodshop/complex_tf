@@ -37,6 +37,6 @@ for other peoples' environments.
 After building the library `pip install` the package. Then in python:
 ```python
 import tensorflow as tf
-import ctf
+import complex_tf as ctf
 ```
 The shared new ops will be loaded as a plugin and should work when using Tensorflow.
