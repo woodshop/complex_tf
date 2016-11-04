@@ -40,9 +40,32 @@ namespace tensorflow {
 			  Eigen::internal::scalar_product_op<T>());
       }
     };
-  }  // namespace functor
+
+template <typename T>
+struct ApplyMomentum<GPUDevice, T> {
+  void operator()(const GPUDevice& d, typename TTypes<T>::Flat var,
+                  typename TTypes<T>::Flat accum,
+                  typename TTypes<T>::ConstScalar lr,
+                  typename TTypes<T>::ConstFlat grad,
+                  typename TTypes<T>::ConstScalar momentum, bool use_nesterov) {
+    Eigen::array<typename TTypes<T>::Tensor::Index, 1> bcast;
+    bcast[0] = grad.dimension(0);
+    Eigen::Sizes<1> single;
+    accum.device(d) = accum * momentum.reshape(single).broadcast(bcast) + grad;
+    if (use_nesterov) {
+      var.device(d) -= grad * lr.reshape(single).broadcast(bcast) +
+                       accum * momentum.reshape(single).broadcast(bcast) *
+                           lr.reshape(single).broadcast(bcast);
+    } else {
+      var.device(d) -= lr.reshape(single).broadcast(bcast) * accum;
+    }
+  }
+};
+
+ }  // namespace functor
 
   template struct functor::ApplyGradientDescent<GPUDevice, complex64>;
+  template struct functor::ApplyMomentum<GPUDevice, complex64>;
   
 }  // end namespace tensorflow
 
