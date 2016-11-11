@@ -14,7 +14,7 @@ class UnaryOpTest(tf.test.TestCase):
         np_ans = np_func(x)
         inx = tf.Variable(x)
         with self.test_session(use_gpu=True, force_gpu=True):
-            tf.initialize_all_variables().run()
+            tf.global_variables_initializer().run()
             y = tf_func(inx)
             tf_gpu = y.eval()
             self.assertAllClose(np_ans, tf_gpu)
@@ -23,7 +23,7 @@ class UnaryOpTest(tf.test.TestCase):
         np_ans = np_func(x)
         inx = tf.Variable(x)
         with self.test_session(use_gpu=True, force_gpu=True):
-            tf.initialize_all_variables().run()
+            tf.global_variables_initializer().run()
             y = tf_func(inx)
             s = list(np.shape(x))
             jacob_t, jacob_n = tf.test.compute_gradient(inx,
@@ -153,7 +153,7 @@ class BinaryOpTest(tf.test.TestCase):
         inx = tf.Variable(x)
         iny = tf.Variable(y)
         with self.test_session(use_gpu=True, force_gpu=True):
-            tf.initialize_all_variables().run()
+            tf.global_variables_initializer().run()
             z = tf_func(inx, iny)
             tf_gpu = z.eval()
             self.assertAllClose(np_ans, tf_gpu)
@@ -163,7 +163,7 @@ class BinaryOpTest(tf.test.TestCase):
         inx = tf.Variable(x)
         iny = tf.Variable(y)
         with self.test_session(use_gpu=True, force_gpu=True):
-            tf.initialize_all_variables().run()
+            tf.global_variables_initializer().run()
             z = tf_func(inx, iny)
             s1 = list(np.shape(x))
             s2 = list(np.shape(np_ans))
