@@ -157,7 +157,7 @@ class CplxL2LossTest(tf.test.TestCase):
 
   def testCplxL2Loss(self):
     for dtype in [tf.complex64]:
-      with self.test_session():
+      with self.test_session(force_gpu=True):
         x = tf.constant([1.0+1.0j, 0.0-2.0j, 3.0-0.0j, 2.0+1.0j], shape=[2, 2],
                         name="x", dtype=dtype)
         l2loss = ctf.nn.cplx_l2_loss(x)
@@ -172,7 +172,7 @@ class CplxL2LossTest(tf.test.TestCase):
     x_val = (np.random.random_sample(x_shape) +
              1j*np.random.random_sample(x_shape)).astype(np.complex64)
    # import pdb; pdb.set_trace()
-    with self.test_session():
+    with self.test_session(force_gpu=True):
       x = tf.constant(x_val, name="x")
       output = ctf.nn.cplx_l2_loss(x)
       # delta is usually .001
