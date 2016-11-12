@@ -18,4 +18,5 @@ from __future__ import division
 from __future__ import print_function
 
 from complex_tf.python.ops import rnn_cell
-
+from complex_tf.python.ops import cplx_l2_loss
+from complex_tf.python.ops import nn_grad
