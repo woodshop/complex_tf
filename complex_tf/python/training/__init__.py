@@ -1,2 +1,3 @@
 from .cplx_gradient_descent import CplxGradientDescentOptimizer
 from .cplx_momentum import CplxMomentumOptimizer
+from .cplx_adam import CplxAdamOptimizer
