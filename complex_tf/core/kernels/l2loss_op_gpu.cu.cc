@@ -23,56 +23,31 @@ limitations under the License.
 
 namespace tensorflow {
 
-typedef Eigen::GpuDevice GPUDevice;
+  typedef Eigen::GpuDevice GPUDevice;
   
-namespace functor {
+  namespace functor {
 
-// template <typename T>
-// struct L2Loss<GPUDevice, T> {
-//   void operator()(const GPUDevice& d,
-// 		  typename TTypes<T>::ConstTensor input,
-//                   typename TTypes<T>::Scalar output) {
+    template <typename T>
+    struct L2Loss<GPUDevice, T> {
+      void operator()(const GPUDevice& d,
+		      typename TTypes<T>::ConstTensor input,
+		      typename TTypes<T>::Scalar output) {
+	// // not sure why this doesn't work
+	// const auto mult = input * input.conjugate();
+	// auto mult_r_sum = mult.real().sum();
+	// auto mult_i_sum = mult.imag().sum();
+	// output.device(d) =
+	//   mult_r_sum.binaryExpr(mult_i_sum, make_complex_func<float>()) *
+	//   static_cast<complex64>(0.5);
+	    output.device(d) =
+		(input * input.conjugate()).sum() * static_cast<complex64>(0.5);
+      }
+    };
     
-//     auto mult = input * input.conjugate();
-//     auto mult_r = mult.real().sum();
-//     auto mult_i = mult.imag().sum();
-
-//     Tensor tmp_t;
-//       //TTypes<float>::Scalar *mult_rr;
-//     //auto buf_r = mult_rr.flat<float>();
-//     OP_REQUIRES_OK(context, context->allocate_temp(DataTypeToEnum<float>::value,
-// 						   TensorShape({}), &tmp_t));
-//     typename TTypes<float>::Scalar buf_r = tmp_t.scalar<T>();
-    
-//     buf_r = mult_r;
-
-//     Tensor mult_ii(DT_FLOAT, TensorShape({1}));
-//     auto buf_i = mult_ii.flat<float>();
-//     buf_i = mult_i;
-
-//     output.device(d) = buf_r.binaryExpr(buf_i, make_complex_func<float>());
-//     //TTypes<float>::Scalar mult_i = mult.imag().sum();
-//     // auto cplx_mult = mult_r.binaryExpr(mult_i, make_complex_func<float>());
-//     //output.device(d) = cplx_mult;
-//     //output.real() = mult_r;
-//     //  mult_r.binaryExpr(mult_i, make_complex_func<float>());
-//   }
-// };
-
-  template <typename T>
-  struct L2Loss<GPUDevice, T> {
-    void operator()(const GPUDevice& d,
-		    typename TTypes<T>::ConstTensor input,
-		    typename TTypes<T>::Scalar output) {
-      output.device(d) =
-	(input * input.conjugate()).sum() * static_cast<complex64>(0.5);
-  }
-};
-
-}  // namespace functor
-
-template struct functor::L2Loss<GPUDevice, complex64>;
-
+  }  // namespace functor
+  
+  template struct functor::L2Loss<GPUDevice, complex64>;
+  
 }  // namespace tensorflow
 
 #endif  // GOOGLE_CUDA
