@@ -36,7 +36,7 @@ class RNNCellTest(tf.test.TestCase):
           initializer=tf.constant_initializer(1.0-1.0j, dtype=tf.complex64)):
         x = tf.zeros([1, 2], dtype=tf.complex64)
         l = linear([x], 2, False)
-        sess.run([tf.initialize_all_variables()])
+        sess.run([tf.global_variables_initializer()])
         res = sess.run([l], {x.name: np.array([[1., 2.]])})
         self.assertAllClose(res[0], [[3.0-3.0j, 3.0-3.0j]])
 
@@ -57,9 +57,9 @@ class RNNCellTest(tf.test.TestCase):
         bias_init = tf.Variable([[0-1j, 0+1j]],
                                   dtype=tf.complex64)
         x = tf.zeros([1, 2], dtype=tf.complex64)
-        sess.run([tf.initialize_all_variables()])
+        sess.run([tf.global_variables_initializer()])
         l = linear([x], 2, True, matrix_init=matrix_init, bias_init=bias_init)
-        sess.run([tf.initialize_all_variables()])
+        sess.run([tf.global_variables_initializer()])
         res = sess.run([l], {x.name: np.array([[1., 2.]])})
         self.assertAllClose(res[0], [[3.0-4.0j, 3.0-2.0j]])
      
@@ -72,7 +72,7 @@ class RNNCellTest(tf.test.TestCase):
         x = tf.zeros([1, 2], dtype=tf.complex64)
         m = tf.zeros([1, 2], dtype=tf.complex64)
         g, _ = tf.nn.rnn_cell.BasicRNNCell(2)(x, m)
-        sess.run([tf.initialize_all_variables()])
+        sess.run([tf.global_variables_initializer()])
         res = sess.run([g], {x.name: np.array([[1., 1.]]),
                              m.name: np.array([[0.1, 0.1]])})
         self.assertEqual(res[0].shape, (1, 2))

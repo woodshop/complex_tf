@@ -39,7 +39,7 @@ class CplxGradientDescentOptimizerTest(tf.test.TestCase):
         grads1 = tf.constant(g1, dtype=dtype)
         sgd_op = ctf.train.CplxGradientDescentOptimizer(
           lr).apply_gradients(zip([grads0, grads1], [var0, var1]))
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
         # Fetch params to validate initial values
         self.assertAllCloseAccordingToType(v0, var0.eval())
         self.assertAllCloseAccordingToType(v1, var1.eval())
@@ -68,7 +68,7 @@ class CplxGradientDescentOptimizerTest(tf.test.TestCase):
         lrate = tf.constant(lr)
         sgd_op = ctf.train.CplxGradientDescentOptimizer(
           lrate).apply_gradients(zip([grads0, grads1], [var0, var1]))
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
         # Fetch params to validate initial values
         self.assertAllCloseAccordingToType(v0, var0.eval())
         self.assertAllCloseAccordingToType(v1, var1.eval())
@@ -91,7 +91,7 @@ class CplxGradientDescentOptimizerTest(tf.test.TestCase):
         values = [1.0, 3.0]
         vars_ = [tf.Variable([v], dtype=dtype) for v in values]
         grads_and_vars = opt.compute_gradients(vars_[0].ref() + vars_[1], vars_)
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
         for grad, _ in grads_and_vars:
           self.assertAllCloseAccordingToType([1.0], grad.eval())
 
@@ -112,7 +112,7 @@ class CplxGradientDescentOptimizerTest(tf.test.TestCase):
         sgd_op = ctf.train.CplxGradientDescentOptimizer(lr).apply_gradients(
             zip([grads0, grads1], [var0, var1]),
             global_step=global_step)
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
         # Fetch params to validate initial values
         self.assertAllCloseAccordingToType(v0, var0.eval())
         self.assertAllCloseAccordingToType(v1, var1.eval())

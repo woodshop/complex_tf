@@ -45,7 +45,7 @@ class TrainingOpsTest(TensorFlowTestCase):
     self.setUp()
     with self.test_session(force_gpu=use_gpu):
       var = variables.Variable(x)
-      variables.initialize_all_variables().run()
+      tf.global_variables_initializer().run()
       self.assertAllCloseAccordingToType(x, var.eval())
       apply_sgd = training_ops.apply_gradient_descent(var, alpha, delta)
       out = apply_sgd.eval()

@@ -42,7 +42,7 @@ class MomentumOptimizerTest(tf.test.TestCase):
         mom_opt = tf.train.MomentumOptimizer(learning_rate=2.0, momentum=0.9)
         mom_update = mom_opt.apply_gradients(
             zip([grads0, grads1], [var0, var1]))
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
         # Check we have slots
         self.assertEqual(["momentum"], mom_opt.get_slot_names())
         slot0 = mom_opt.get_slot(var0, "momentum")
@@ -101,7 +101,7 @@ class MomentumOptimizerTest(tf.test.TestCase):
         mom_op = ctf.train.CplxMomentumOptimizer(learning_rate=2.0, momentum=0.9,
             use_nesterov=True)
         opt_op = mom_op.minimize(cost, global_step, [var0, var1])
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
         for t in range(1, 5):
           opt_op.run()
           var0_np, accum0_np = self._update_nesterov_momentum_numpy(var0_np,
@@ -122,7 +122,7 @@ class MomentumOptimizerTest(tf.test.TestCase):
             learning_rate=tf.constant(2.0), momentum=tf.constant(0.9))
         mom_update = mom_opt.apply_gradients(
             zip([grads0, grads1], [var0, var1]))
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
         # Check we have slots
         self.assertEqual(["momentum"], mom_opt.get_slot_names())
         slot0 = mom_opt.get_slot(var0, "momentum")
@@ -179,7 +179,7 @@ class MomentumOptimizerTest(tf.test.TestCase):
             zip([grads0, grads1], [var0, var1]))
         mom_update2 = mom_opt.apply_gradients(
             zip([grads0, grads1], [var0, var1]))
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
 
         self.assertEqual(["momentum"], mom_opt.get_slot_names())
         slot0 = mom_opt.get_slot(var0, "momentum")
