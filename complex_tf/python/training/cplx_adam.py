@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 from tensorflow.python.training.adam import AdamOptimizer
+from tensorflow.python.framework import dtypes
 
 class CplxAdamOptimizer(AdamOptimizer):
   """Overrides tf.train.AdamOptimizer to support complex values.
