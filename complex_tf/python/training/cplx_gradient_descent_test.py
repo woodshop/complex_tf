@@ -90,7 +90,8 @@ class CplxGradientDescentOptimizerTest(tf.test.TestCase):
         opt = ctf.train.CplxGradientDescentOptimizer(lr)
         values = [1.0, 3.0]
         vars_ = [tf.Variable([v], dtype=dtype) for v in values]
-        grads_and_vars = opt.compute_gradients(vars_[0].ref() + vars_[1], vars_)
+        grads_and_vars = opt.compute_gradients(
+          vars_[0]._ref() + vars_[1], vars_)
         tf.global_variables_initializer().run()
         for grad, _ in grads_and_vars:
           self.assertAllCloseAccordingToType([1.0], grad.eval())
