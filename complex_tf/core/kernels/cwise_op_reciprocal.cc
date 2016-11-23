@@ -16,10 +16,11 @@ limitations under the License.
 #include "tensorflow/core/kernels/cwise_ops_common.h"
 
 namespace tensorflow {
-  
 #if GOOGLE_CUDA
-  REGISTER(UnaryOp, GPU, "Inv", functor::inverse, complex64);
-  REGISTER(SimpleBinaryOp, GPU, "InvGrad", functor::inverse_grad, complex64);
-#endif // GOOGLE_CUDA
-
-} // namespace tensorflow 
+REGISTER(UnaryOp, GPU, "Inv", functor::inverse, complex64);
+REGISTER(SimpleBinaryOp, GPU, "InvGrad", functor::inverse_grad, complex64);
+REGISTER(UnaryOp, GPU, "Reciprocal", functor::inverse, complex64);
+REGISTER(SimpleBinaryOp, GPU, "ReciprocalGrad", functor::inverse_grad,
+	 complex64);
+#endif
+}  // namespace tensorflow

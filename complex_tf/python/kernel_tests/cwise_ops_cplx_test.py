@@ -47,19 +47,19 @@ class UnaryOpTest(tf.test.TestCase):
                   1j*np.random.randn(*sh)).astype(np.complex64))
             self._compareGpuGrad(x, np.negative, tf.neg)
                       
-    def testCplxInvGPU(self):
+    def testCplxReciprocalGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
         for sh in shapes:
             x = ((np.random.randn(*sh) +
                   1j*np.random.randn(*sh)).astype(np.complex64))
-            self._compareGpu(x, np.reciprocal, tf.inv)
+            self._compareGpu(x, np.reciprocal, tf.reciprocal)
                   
-    def testCplxInvGradGPU(self):
+    def testCplxReciprocalGradGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
         for sh in shapes:
             x = ((np.random.randn(*sh) +
                   1j*np.random.randn(*sh)).astype(np.complex64))
-            self._compareGpuGrad(x, np.reciprocal, tf.inv)
+            self._compareGpuGrad(x, np.reciprocal, tf.reciprocal)
 
     def testCplxSquareGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
