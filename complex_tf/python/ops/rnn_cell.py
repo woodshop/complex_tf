@@ -26,7 +26,13 @@ from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import array_ops
 
 class CplxBasicRNNCell(BasicRNNCell):
-
+  """Basic RNN Cell for complex domain.
+  
+  Inherits tf.nn.rnn_cell.BasicRNNCell for complex-domain RNNs. The primary 
+  difference is that it uses ctf.nn.rnn_cell._linear which allows the passing of
+  custom matrix and bias initializers, which is necessary for the 
+  complex-domain.
+  """
   def __init__(self, num_units, input_size=None, activation=tanh,
                matrix_initializer=None, bias_initializer=None):
     super(CplxBasicRNNCell, self).__init__(num_units, input_size, activation)
@@ -34,9 +40,10 @@ class CplxBasicRNNCell(BasicRNNCell):
     self._bias_init = bias_initializer
 
   def __call__(self, inputs, state, scope=None):
-    """Basic RNN: output = new_state = activation(W * input + U * state + B).
+    """Cplx Basic RNN: output = new_state = 
+         activation(W * input + U * state + B).
     """
-    with vs.variable_scope(scope or type(self).__name__):  # "BasicRNNCell"
+    with vs.variable_scope(scope or type(self).__name__):  # "CplxBasicRNNCell"
       output = self._activation(_linear([inputs, state], self._num_units, True,
                                         matrix_init=self._matrix_init,
                                         bias_init=self._bias_init))
@@ -46,6 +53,9 @@ class CplxBasicRNNCell(BasicRNNCell):
 def _linear(args, output_size, bias, bias_start=0.0, scope=None,
             matrix_init=None, bias_init=None):
   """Linear map: sum_i(args[i] * W[i]), where W[i] is a variable.
+
+  A reimplementation of tf.nn.rnn_cell._linear that allows input args specfying 
+  an initializer for the weight matrix and for the bias.
 
   Args:
     args: a 2D Tensor or a list of 2D, batch x n, Tensors.
