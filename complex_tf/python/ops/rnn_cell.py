@@ -33,9 +33,10 @@ class CplxBasicRNNCell(BasicRNNCell):
   custom matrix and bias initializers, which is necessary for the 
   complex-domain.
   """
-  def __init__(self, num_units, input_size=None, activation=tanh,
+  def __init__(self, num_units, activation=tanh,
                matrix_initializer=None, bias_initializer=None):
-    super(CplxBasicRNNCell, self).__init__(num_units, input_size, activation)
+    super(CplxBasicRNNCell, self).__init__(num_units=num_units,
+                                           activation=activation)
     self._matrix_init = matrix_initializer
     self._bias_init = bias_initializer
 
