@@ -233,7 +233,7 @@ class VariableOpTest(tf.test.TestCase):
           # GPU. The test ensures that the dependency on 'increment' is still
           # honored, i.e., the Send and Recv from GPU to CPU should take place
           # only after the increment.
-          result = tf.mul(var, var)
+          result = tf.multiply(var, var)
       self.assertAllClose([-16.0+30.0j], result.eval())
 
   def testIsVariableInitialized(self):

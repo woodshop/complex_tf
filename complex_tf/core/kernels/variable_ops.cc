@@ -25,9 +25,12 @@ namespace tensorflow {
 
 #if GOOGLE_CUDA
 #define REGISTER_GPU_KERNELS(type)                                       \
-  REGISTER_KERNEL_BUILDER(                                               \
-      Name("Variable").Device(DEVICE_GPU).TypeConstraint<type>("dtype"), \
-      VariableOp);                                                       \
+  REGISTER_KERNEL_BUILDER(                                                 \
+      Name("Variable").Device(DEVICE_GPU).TypeConstraint<type>("dtype"),   \
+      VariableOp);                                                         \
+  REGISTER_KERNEL_BUILDER(                                                 \
+      Name("VariableV2").Device(DEVICE_GPU).TypeConstraint<type>("dtype"), \
+      VariableOp);                                                         \
   REGISTER_KERNEL_BUILDER(Name("TemporaryVariable")                      \
                               .Device(DEVICE_GPU)                        \
                               .TypeConstraint<type>("dtype"),            \
