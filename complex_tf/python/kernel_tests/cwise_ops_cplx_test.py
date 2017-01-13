@@ -38,14 +38,14 @@ class UnaryOpTest(tf.test.TestCase):
         for sh in shapes:
             x = ((np.random.randn(*sh) +
                   1j*np.random.randn(*sh)).astype(np.complex64))
-            self._compareGpu(x, np.negative, tf.neg)
+            self._compareGpu(x, np.negative, tf.negative)
                   
     def testCplxNegGradGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
         for sh in shapes:
             x = ((np.random.randn(*sh) +
                   1j*np.random.randn(*sh)).astype(np.complex64))
-            self._compareGpuGrad(x, np.negative, tf.neg)
+            self._compareGpuGrad(x, np.negative, tf.negative)
                       
     def testCplxReciprocalGPU(self):
         shapes = [(5,4,3), (5,4), (5,), (1,)]
@@ -202,7 +202,7 @@ class BinaryOpTest(tf.test.TestCase):
                   1j*np.random.randn(*sh0)).astype(np.complex64))
             y = ((np.random.randn(*sh1) +
                   1j*np.random.randn(*sh1)).astype(np.complex64))
-            self._compareGpu(x, y, np.subtract, tf.sub)
+            self._compareGpu(x, y, np.subtract, tf.subtract)
                   
     def testCplxSubGradGPU(self):
         shapes1 = [(5,4,3), (5,4), (1,), (5,), (5, 4), (5, 1)]
@@ -212,7 +212,7 @@ class BinaryOpTest(tf.test.TestCase):
                   1j*np.random.randn(*sh0)).astype(np.complex64))
             y = ((np.random.randn(*sh1) +
                   1j*np.random.randn(*sh1)).astype(np.complex64))
-            self._compareGpuGrad(x, y, np.subtract, tf.sub)
+            self._compareGpuGrad(x, y, np.subtract, tf.subtract)
                       
     def testCplxMulGPU(self):
         shapes1 = [(5,4,3), (5,4), (1,), (5,), (5, 4), (5, 1)]
@@ -222,7 +222,7 @@ class BinaryOpTest(tf.test.TestCase):
                   1j*np.random.randn(*sh0)).astype(np.complex64))
             y = ((np.random.randn(*sh1) +
                   1j*np.random.randn(*sh1)).astype(np.complex64))
-            self._compareGpu(x, y, np.multiply, tf.mul)
+            self._compareGpu(x, y, np.multiply, tf.multiply)
                   
     def testCplxMulGradGPU(self):
         shapes1 = [(5,4,3), (5,4), (1,), (5,), (5, 4), (5, 1)]
@@ -232,7 +232,7 @@ class BinaryOpTest(tf.test.TestCase):
                   1j*np.random.randn(*sh0)).astype(np.complex64))
             y = ((np.random.randn(*sh1) +
                   1j*np.random.randn(*sh1)).astype(np.complex64))
-            self._compareGpuGrad(x, y, np.multiply, tf.mul)
+            self._compareGpuGrad(x, y, np.multiply, tf.multiply)
                       
     def testCplxDivGPU(self):
         shapes1 = [(5,4,3), (5,4), (1,), (5,), (5, 4), (5, 1)]
