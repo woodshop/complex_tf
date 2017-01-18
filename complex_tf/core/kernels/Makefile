@@ -1,5 +1,7 @@
 INCLUDE += -I $(TF_SRC)
 
+INCLUDE += -I $(TF_SRC)/bazel-tensorflow/external/local_config_cuda
+
 INCLUDE += -I $(shell python -c \
 	'import tensorflow as tf; print(tf.sysconfig.get_include())')
 
