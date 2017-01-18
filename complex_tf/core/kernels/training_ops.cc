@@ -307,4 +307,108 @@ REGISTER_KERNELS(GPU, complex64);
 #endif
 #undef REGISTER_KERNELS
 
+template <typename Device, typename T>
+class ApplyRMSPropOp : public OpKernel {
+ public:
+  explicit ApplyRMSPropOp(OpKernelConstruction* ctx) : OpKernel(ctx) {
+    OP_REQUIRES_OK(ctx, ctx->GetAttr("use_locking", &use_exclusive_lock_));
+  }
+
+  void Compute(OpKernelContext* ctx) override {
+    auto locks = MaybeLockMutexesInOrder(ctx, use_exclusive_lock_, {0, 1, 2});
+
+    Tensor var = ctx->mutable_input(0, use_exclusive_lock_);
+    Tensor ms = ctx->mutable_input(1, use_exclusive_lock_);
+    Tensor mom = ctx->mutable_input(2, use_exclusive_lock_);
+
+    OP_REQUIRES(
+        ctx, var.IsInitialized(),
+        errors::FailedPrecondition(
+            "Attempting to use uninitialized variables: ", def().input(0)));
+    OP_REQUIRES(
+        ctx, ms.IsInitialized(),
+        errors::FailedPrecondition(
+            "Attempting to use uninitialized variables: ", def().input(1)));
+    OP_REQUIRES(
+        ctx, mom.IsInitialized(),
+        errors::FailedPrecondition(
+            "Attempting to use uninitialized variables: ", def().input(2)));
+
+    const Tensor& lr = ctx->input(3);
+    const Tensor& rho = ctx->input(4);
+    const Tensor& momentum = ctx->input(5);
+    const Tensor& epsilon = ctx->input(6);
+    const Tensor& grad = ctx->input(7);
+
+    OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(lr.shape()),
+                errors::InvalidArgument("lr is not a scalar : ",
+                                        lr.shape().DebugString()));
+    OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(rho.shape()),
+                errors::InvalidArgument("rho is not a scalar: ",
+                                        rho.shape().DebugString()));
+    OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(momentum.shape()),
+                errors::InvalidArgument("momentum is not a scalar: ",
+                                        momentum.shape().DebugString()));
+    OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(epsilon.shape()),
+                errors::InvalidArgument("epsilon is not a scalar: ",
+                                        epsilon.shape().DebugString()));
+
+    OP_REQUIRES(ctx, var.shape().IsSameSize(ms.shape()),
+                errors::InvalidArgument("var and ms do not have the same shape",
+                                        var.shape().DebugString(), " ",
+                                        ms.shape().DebugString()));
+
+    OP_REQUIRES(ctx, var.shape().IsSameSize(mom.shape()),
+                errors::InvalidArgument(
+                    "var and mom do not have the same shape",
+                    var.shape().DebugString(), " ", mom.shape().DebugString()));
+
+    OP_REQUIRES(
+        ctx, var.shape().IsSameSize(grad.shape()),
+        errors::InvalidArgument("var and grad do not have the same shape",
+                                var.shape().DebugString(), " ",
+                                grad.shape().DebugString()));
+
+    const Device& device = ctx->template eigen_device<Device>();
+    functor::ApplyRMSProp<Device, T>()(device, var.flat<T>(), ms.flat<T>(),
+                                       mom.flat<T>(), lr.scalar<T>(),
+                                       rho.scalar<T>(), momentum.scalar<T>(),
+                                       epsilon.scalar<T>(), grad.flat<T>());
+
+    ctx->forward_ref_input_to_ref_output(0, 0);
+  }
+
+ private:
+  bool use_exclusive_lock_;
+};
+
+
+using GPUDevice = Eigen::GpuDevice;
+
+#define REGISTER_KERNELS(D, T)                                                \
+  REGISTER_KERNEL_BUILDER(                                                    \
+      Name("ApplyRMSProp").Device(DEVICE_##D).TypeConstraint<T>("T"),         \
+      ApplyRMSPropOp<D##Device, T>);
+
+#if GOOGLE_CUDA
+// Forward declarations of the functor specializations for GPU.
+namespace functor {
+#define DECLARE_GPU_SPEC(T)                                                    \
+  template <>                                                                  \
+  void ApplyRMSProp<GPUDevice, T>::operator()(                                 \
+      const GPUDevice& d, typename TTypes<T>::Flat var,                        \
+      typename TTypes<T>::Flat ms, typename TTypes<T>::Flat mom,               \
+      typename TTypes<T>::ConstScalar lr, typename TTypes<T>::ConstScalar rho, \
+      typename TTypes<T>::ConstScalar momentum,                                \
+      typename TTypes<T>::ConstScalar epsilon,                                 \
+      typename TTypes<T>::ConstFlat grad);                                     \
+  extern template struct ApplyRMSProp<GPUDevice, T>;                           \
+DECLARE_GPU_SPEC(complex64);
+#undef DECLARE_GPU_SPEC
+}  // namespace functor
+
+REGISTER_KERNELS(GPU, complex64);
+#endif
+#undef REGISTER_KERNELS
+
 }  // namespace tensorflow

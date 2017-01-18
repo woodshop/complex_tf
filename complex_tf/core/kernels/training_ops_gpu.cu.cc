@@ -120,11 +120,37 @@ namespace tensorflow {
       }
     };
     
+    template <typename T>
+    struct ApplyRMSProp<GPUDevice, T> {
+      void operator()(const GPUDevice& d, typename TTypes<T>::Flat var,
+		      typename TTypes<T>::Flat ms, 
+		      typename TTypes<T>::Flat mom,
+		      typename TTypes<T>::ConstScalar lr,
+		      typename TTypes<T>::ConstScalar rho,
+		      typename TTypes<T>::ConstScalar momentum,
+		      typename TTypes<T>::ConstScalar epsilon,
+		      typename TTypes<T>::ConstFlat grad) {
+	Eigen::array<typename TTypes<T>::Tensor::Index, 1> bcast;
+	bcast[0] = grad.dimension(0);
+	Eigen::Sizes<1> single;
+	const auto one = static_cast<T>(1.0);
+	ms.device(d) = ms +
+	  (rho.constant(one) - rho).reshape(single).broadcast(bcast) *
+	  (grad.abs() * grad.abs() - ms);
+	mom.device(d) =
+	  mom * momentum.reshape(single).broadcast(bcast) +
+	  lr.reshape(single).broadcast(bcast) * grad /
+	  ((epsilon.reshape(single).broadcast(bcast) + ms).unaryExpr(cplx_sqrt()));
+	var.device(d) -= mom;
+      }
+    };
+
   }  // namespace functor
   
   template struct functor::ApplyGradientDescent<GPUDevice, complex64>;
   template struct functor::ApplyMomentum<GPUDevice, complex64>;
   template struct functor::ApplyAdam<GPUDevice, complex64>;
+  template struct functor::ApplyRMSProp<GPUDevice, complex64>;
   
 }  // end namespace tensorflow
 
