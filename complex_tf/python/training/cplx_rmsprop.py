@@ -53,6 +53,6 @@ class CplxRMSPropOptimizer(RMSPropOptimizer):
     Returns:
       Valid types for loss, variables and gradients.
     """
-    valid_dtypes = super(CplxRMSPRopOptimizer, self)._valid_dtypes()
+    valid_dtypes = super(CplxRMSPropOptimizer, self)._valid_dtypes()
     valid_dtypes.add(dtypes.complex64)
     return valid_dtypes
