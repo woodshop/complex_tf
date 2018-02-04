@@ -1,34 +1,12 @@
-INCLUDE += -I $(TF_SRC)
+TF_CFLAGS = $(shell python -c 'import tensorflow as tf; print(" ".join(tf.sysconfig.get_compile_flags()))')
+TF_LFLAGS = $(shell python -c 'import tensorflow as tf; print(" ".join(tf.sysconfig.get_link_flags()))')
+TF_CFLAGS += -I$(TF_SRC)
+TF_LFLAGS += -ltensorflow_framework
 
-INCLUDE += -I $(TF_SRC)/bazel-tensorflow/external/local_config_cuda
-
-INCLUDE += -I $(shell python -c \
-	'import tensorflow as tf; print(tf.sysconfig.get_include())')
-
-CXX = gcc -std=c++11 -L$(CUDA_HOME)/lib64
-
-CXXFLAGS = -DGOOGLE_CUDA=1          \
-	-D_MWAITXINTRIN_H_INCLUDED  \
-	-D_FORCE_INLINES            \
-	-DEIGEN_AVOID_STL_ARRAY     \
-	$(INCLUDE) -fPIC            \
-
-# Using libprotobuf_lite to resolve runtime linking errors. Much
-# simpler than figuring out how to compile and link protobuf with
-# the project, but shoudl find a better solution.
-PROTOBUF_LIB = $(TF_SRC)/bazel-bin/external/protobuf/libprotobuf_lite.pic.a
-
-NVCC = nvcc -std=c++11
-NVCCFLAGS = -DGOOGLE_CUDA=1         \
-	-D_MWAITXINTRIN_H_INCLUDED  \
-	-D_FORCE_INLINES            \
-	-DEIGEN_AVOID_STL_ARRAY     \
-	$(INCLUDE) -c -x cu -Xcompiler -fPIC --expt-relaxed-constexpr \
-
-LDFLAGS = -shared -lprotobuf -lcudart
-
+CXX = g++ -std=c++11 -shared
+NVCC = nvcc -std=c++11 -c
 CUDA_SRCS = $(wildcard *.cu.cc)
-SRCS = $(filter-out $(CUDA_SRCS),$(wildcard *.cc)) $(PROTOBUF_LIB)
+SRCS = $(filter-out $(CUDA_SRCS),$(wildcard *.cc)) # $(PROTOBUF_LIB)
 
 RM = rm -f
 TARGET_LIB = complextf.so
@@ -41,10 +19,10 @@ ifndef TF_SRC
 endif
 
 $(TARGET_LIB): $(CUDA_SRCS:.cc=.o) $(SRCS)
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
+	$(CXX) -o $@ $^ $(TF_CFLAGS) -D GOOGLE_CUDA=1 -fPIC -lcudart $(TF_LFLAGS)
 
 $(CUDA_SRCS:.cc=.o): $(CUDA_SRCS)
-	$(NVCC) $^ $(NVCCFLAGS)
+	$(NVCC) $^ $(TF_CFLAGS) -D GOOGLE_CUDA=1 -x cu -Xcompiler -fPIC  --expt-relaxed-constexpr $(TF_LFLAGS)
 
 .PHONY: clean
 clean:
